@@ -1,7 +1,10 @@
 import os
+from docx import Document
+
 
 input_directory_path = ''
 output_directory_path = ''
+output_word_document = Document()
 
 
 def file_finder(directory_path):
@@ -34,6 +37,7 @@ def txt_saver(text, txt_output_path):
         output_txt.write("%s \n\n------------------------------------------------------------------------------"
                          "------------------------------------------------------------\n\n"
                          % text)
+    print("Saved text in %s" % txt_output_path)
 
 
 def main_loop(input_dir_path, output_dir_path):
@@ -41,12 +45,17 @@ def main_loop(input_dir_path, output_dir_path):
     for txt_path in txt_list:
         corrected_txt = txt_corrector(txt_path)
         txt_saver(corrected_txt, output_dir_path)
+        with open(r"%s/output text.txt" % output_dir_path) as text_for_doc:  # saving text as word document
+            for line in text_for_doc:
+                output_word_document.add_paragraph(line)
     for directory in dir_list:
         new_input_dir_path = input_dir_path + '/' + directory
         new_output_dir_path = output_dir_path + '/' + directory
         if os.path.isdir(new_output_dir_path) is False:  # checking if there is directory for txt file
             os.makedirs(new_output_dir_path)
         main_loop(new_input_dir_path, new_output_dir_path)
+    output_word_document.save("%s/output doc file.docx" % output_dir_path)
+    print("saved doc")
 
 
 if __name__ == '__main__':
